@@ -1,0 +1,1 @@
+const CONFIG = { BACKEND_URL: 'https://YOUR_BACKEND_URL' };
