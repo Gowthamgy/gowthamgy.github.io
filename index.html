@@ -2,435 +2,468 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gowtham A - Portfolio</title>
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <!-- AOS for scroll animations -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <!-- tsparticles for subtle animated background -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.11.1/tsparticles.bundle.min.js"></script>
   <style>
+    :root{--glass-bg: rgba(255,255,255,0.04); --glass-border: rgba(255,255,255,0.08)}
     body { font-family: 'Inter', sans-serif; }
-    .fade-in { animation: fadeIn 1.2s ease-in-out; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    /* simple mobile-friendly container */
-    .container { max-width: 980px; margin-left: auto; margin-right: auto; }
+    .glass { background: var(--glass-bg); backdrop-filter: blur(8px); border: 1px solid var(--glass-border); }
+    /* subtle focus styles */
+    .focus-ring:focus{ outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.25); border-radius: 0.5rem }
+    /* modal animation */
+    .modal-enter { transform: translateY(8px); opacity: 0 }
+    .modal-enter-active { transform: translateY(0); opacity: 1; transition: all .22s ease-out }
+    .container-max { max-width: 980px; margin-left: auto; margin-right: auto; }
   </style>
 </head>
-<body class="bg-gray-900 text-white">
+<body class="bg-gradient-to-br from-gray-900 to-black text-white antialiased">
+
+<!-- Particles background -->
+<div id="tsparticles" class="fixed inset-0 -z-10" aria-hidden="true"></div>
 
 <!-- Navbar -->
-<nav class="fixed w-full z-20 top-0 backdrop-blur-md bg-gray-900/80 border-b border-white/10 shadow-lg">
-  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-    
-    <!-- Logo / Name -->
-    <h1 class="text-2xl font-bold tracking-wide text-white hover:text-blue-400 transition">
-      Gowtham A
-    </h1>
+<nav class="fixed w-full z-30 top-0 backdrop-blur-md bg-gray-900/60 border-b border-white/6 shadow-lg">
+  <div class="container-max mx-auto px-6 py-3 flex justify-between items-center">
+    <div class="flex items-center gap-4">
+      <img src="photo.jpg" alt="Gowtham A" class="w-10 h-10 rounded-full border-2 border-blue-500"/>
+      <h1 class="text-lg md:text-2xl font-bold tracking-wide text-white">Gowtham A</h1>
+    </div>
 
-    <!-- Desktop Menu -->
-    <div class="hidden md:flex space-x-6 text-gray-300 font-medium">
+    <div class="hidden md:flex items-center gap-6 text-gray-200 font-medium">
       <a href="#about" class="hover:text-blue-400 transition">About</a>
       <a href="#skills" class="hover:text-blue-400 transition">Skills</a>
       <a href="#projects" class="hover:text-blue-400 transition">Projects</a>
       <a href="#achievements" class="hover:text-blue-400 transition">Achievements</a>
       <a href="#education" class="hover:text-blue-400 transition">Education</a>
       <a href="#ai-chat" class="hover:text-blue-400 transition">AI Chat</a>
+      <button onclick="openModal('feedbackModal')" class="hover:text-blue-400 transition">Feedback</button>
       <a href="#contact" class="hover:text-blue-400 transition">Contact</a>
     </div>
 
-    <!-- Mobile Menu Button -->
     <div class="md:hidden">
-      <button id="menu-btn" class="text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <!-- Hamburger Icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16"/>
+      <button id="menu-btn" aria-expanded="false" class="text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 p-2 rounded">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
       </button>
     </div>
   </div>
 
-  <!-- Mobile Menu (Hidden by Default) -->
+  <!-- Mobile menu -->
   <div id="mobile-menu" class="hidden md:hidden bg-gray-900/95 backdrop-blur-md border-t border-white/10">
     <div class="flex flex-col items-center space-y-4 py-6 text-gray-300 font-medium">
-      <a href="#about" class="hover:text-blue-400 transition">About</a>
-      <a href="#skills" class="hover:text-blue-400 transition">Skills</a>
-      <a href="#projects" class="hover:text-blue-400 transition">Projects</a>
-      <a href="#achievements" class="hover:text-blue-400 transition">Achievements</a>
-      <a href="#education" class="hover:text-blue-400 transition">Education</a>
-      <a href="#ai-chat" class="hover:text-blue-400 transition">AI Chat</a>
-      <a href="#contact" class="hover:text-blue-400 transition">Contact</a>
+      <a href="#about" class="hover:text-blue-400 transition" onclick="toggleMobileMenu()">About</a>
+      <a href="#skills" class="hover:text-blue-400 transition" onclick="toggleMobileMenu()">Skills</a>
+      <a href="#projects" class="hover:text-blue-400 transition" onclick="toggleMobileMenu()">Projects</a>
+      <a href="#achievements" class="hover:text-blue-400 transition" onclick="toggleMobileMenu()">Achievements</a>
+      <a href="#education" class="hover:text-blue-400 transition" onclick="toggleMobileMenu()">Education</a>
+      <a href="#ai-chat" class="hover:text-blue-400 transition" onclick="toggleMobileMenu()">AI Chat</a>
+      <button onclick="openModal('feedbackModal'); toggleMobileMenu()" class="hover:text-blue-400 transition">Feedback</button>
+      <a href="#contact" class="hover:text-blue-400 transition" onclick="toggleMobileMenu()">Contact</a>
     </div>
   </div>
 </nav>
 
-<script>
-  const menuBtn = document.getElementById('menu-btn');
-  const mobileMenu = document.getElementById('mobile-menu');
-  const menuLinks = mobileMenu.querySelectorAll('a');
-
-  // Toggle mobile menu
-  menuBtn.addEventListener('click', () => {
-    mobileMenu.classList.toggle('hidden');
-  });
-
-  // Close menu when clicking a link
-  menuLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      mobileMenu.classList.add('hidden');
-    });
-  });
-</script>
-
 <main class="pt-24">
 
-<!-- Hero -->
-<section class="h-screen flex flex-col md:flex-row justify-center items-center text-center md:text-left px-6 fade-in container">
-  <img src="photo.jpg" alt="Gowtham A" class="w-36 h-36 md:w-56 md:h-56 rounded-full border-4 border-blue-500 shadow-lg mb-6 md:mb-0 md:mr-10">
-  <div>
-    <h2 class="text-3xl md:text-5xl font-bold mb-4">Hi, I'm Gowtham 👋</h2>
-    <p class="text-lg text-gray-300 mb-6">Senior Software Engineer — Python | Data Pipelines | AI Automation</p>
-    <div class="flex flex-col md:flex-row gap-4 justify-center md:justify-start">
-      <a href="#contact" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition">Get In Touch</a>
-      <a href="GowthamA_CV.pdf" target="_blank" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition">📄 Download Resume</a>
+  <!-- Hero -->
+  <section class="min-h-screen flex flex-col md:flex-row justify-center items-center text-center md:text-left px-6 container-max mx-auto" data-aos="fade-up">
+    <div class="md:w-1/3 flex justify-center md:justify-start">
+      <img src="photo.jpg" alt="Gowtham A" class="w-36 h-36 md:w-56 md:h-56 rounded-full border-4 border-blue-500 shadow-xl" />
     </div>
-  </div>
-</section>
-<!-- About (Upgraded Design) -->
-<section id="about" class="relative py-16 bg-gradient-to-br from-gray-900 via-gray-800 to-black fade-in">
-  <div class="container mx-auto px-6 max-w-5xl relative z-10">
+    <div class="md:w-2/3 mt-6 md:mt-0 md:pl-10">
+      <h2 class="text-3xl md:text-5xl font-bold mb-4">Hi, I'm Gowtham <span class="inline-block">👋</span></h2>
+      <p class="text-lg text-gray-300 mb-6">Senior Software Engineer — Python | Data Pipelines | AI Automation</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+        <button onclick="openModal('contactModal')" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition">Get In Touch</button>
+        <a href="GowthamA_CV.pdf" target="_blank" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition">📄 Download Resume</a>
+      </div>
 
-    <div class="text-center mb-8">
-      <h2 class="text-4xl font-bold text-white mb-4">👨‍💻 About Me</h2>
-      <div class="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full"></div>
+      <p class="mt-6 text-sm text-gray-400 max-w-xl">I build reliable, production-ready data pipelines and automation systems — focusing on scraping, orchestration (Airflow), containerization, and AI-driven tooling.</p>
     </div>
+  </section>
 
-    <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/10">
-      <p class="text-gray-300 leading-relaxed text-lg">
-        I am a Senior Software Engineer with over <span class="text-blue-400 font-semibold">7 years of experience</span> in Python scripting, backend automation, and web scraping.  
-        Skilled in building efficient data pipelines using tools like <span class="text-blue-400">Scrapy</span>, <span class="text-blue-400">Apache Airflow</span>, and <span class="text-blue-400">Docker</span>.  
-        Passionate about <span class="text-purple-400">AI-driven automation</span> and scalable solutions.
-      </p>
+  <!-- About -->
+  <section id="about" class="relative py-16 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div class="container-max mx-auto px-6 max-w-5xl relative z-10" data-aos="fade-right">
+      <div class="text-center mb-8">
+        <h2 class="text-4xl font-bold text-white mb-4">👨‍💻 About Me</h2>
+        <div class="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full"></div>
+      </div>
+      <div class="glass p-8 rounded-2xl shadow-2xl border border-white/10">
+        <p class="text-gray-300 leading-relaxed text-lg">
+          I am a Senior Software Engineer with over <span class="text-blue-400 font-semibold">7 years of experience</span> in Python scripting, backend automation, and web scraping.
+          Skilled in building efficient data pipelines using tools like <span class="text-blue-400">Scrapy</span>, <span class="text-blue-400">Apache Airflow</span>, and <span class="text-blue-400">Docker</span>.
+          Passionate about <span class="text-purple-400">AI-driven automation</span> and scalable solutions.
+        </p>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Decorative Glow -->
-  <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-60 pointer-events-none"></div>
-</section>
-
-
-<!-- Skills -->
-<section id="skills" class="bg-gray-800 py-10 fade-in">
-  <div class="container mx-auto px-6">
-    <h2 class="text-2xl font-bold mb-6 text-blue-400">Skills</h2>
-
-    <div class="grid gap-6 md:grid-cols-3">
-      
-      <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-5 rounded-xl shadow-lg hover:shadow-xl transition">
-        <h3 class="text-lg font-semibold text-green-400 mb-3">Languages & Frameworks</h3>
-        <p class="text-gray-300">Python, Scrapy, Flask (basic), FastAPI (basic), SQL, HTML, CSS, JavaScript (basic), Power BI (basic), Excel</p>
-      </div>
-
-      <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-5 rounded-xl shadow-lg hover:shadow-xl transition">
-        <h3 class="text-lg font-semibold text-green-400 mb-3">Web Scraping & ETL</h3>
-        <p class="text-gray-300">Scrapy, Requests, BeautifulSoup, JSON/HTML parsing</p>
-      </div>
-
-      <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-5 rounded-xl shadow-lg hover:shadow-xl transition">
-        <h3 class="text-lg font-semibold text-green-400 mb-3">DevOps & Cloud</h3>
-        <p class="text-gray-300">Docker, Git, AWS S3, GitHub Actions, Apache Airflow</p>
-      </div>
-
-      <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-5 rounded-xl shadow-lg hover:shadow-xl transition">
-        <h3 class="text-lg font-semibold text-green-400 mb-3">Databases</h3>
-        <p class="text-gray-300">MySQL, PostgreSQL, MSSQL, MongoDB (basic), Cosmos DB</p>
-      </div>
-
-      <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-5 rounded-xl shadow-lg hover:shadow-xl transition">
-        <h3 class="text-lg font-semibold text-green-400 mb-3">Tools & Environments</h3>
-        <p class="text-gray-300">Visual Studio Code, DBeaver, Eclipse, Ubuntu, Windows</p>
-      </div>
-
-      <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-5 rounded-xl shadow-lg hover:shadow-xl transition">
-        <h3 class="text-lg font-semibold text-green-400 mb-3">Automation Tools</h3>
-        <p class="text-gray-300">OpenAI ChatGPT API, Prompt Engineering, N8N (basic)</p>
-      </div>
-
-      <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-5 rounded-xl shadow-lg hover:shadow-xl transition md:col-span-3">
-        <h3 class="text-lg font-semibold text-green-400 mb-3">Soft Skills</h3>
-        <p class="text-gray-300">Agile development, code reviews, documentation</p>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-
-<!-- Projects -->
-<section id="projects" class="bg-gray-800 py-10">
-  <div class="container mx-auto px-6">
-    <h2 class="text-2xl font-bold mb-6 text-blue-400">Projects</h2>
-    <div class="grid gap-6 md:grid-cols-2">
-
-      <div class="bg-gradient-to-r from-blue-500 to-purple-500 p-1 rounded-xl shadow-lg hover:scale-105 transform transition">
-        <div class="bg-gray-900 p-5 rounded-xl h-full">
-          <h3 class="font-semibold text-lg mb-2">JATO Car Data Pipeline</h3>
-          <p class="text-gray-300 text-sm">
-            Automated vehicle pricing pipeline with Scrapy, Airflow, MySQL, Docker & OpenAI API.
-          </p>
+  <!-- Skills -->
+  <section id="skills" class="py-10">
+    <div class="container-max mx-auto px-6" data-aos="fade-left">
+      <h2 class="text-2xl font-bold mb-6 text-blue-400">Skills</h2>
+      <div class="grid gap-6 md:grid-cols-3">
+        <div class="glass p-6 rounded-xl shadow-lg hover:shadow-xl transition">
+          <h3 class="text-lg font-semibold text-green-400 mb-3">Languages & Frameworks</h3>
+          <p class="text-gray-300">Python, Scrapy, Flask (basic), FastAPI (basic), SQL, HTML, CSS, JavaScript (basic), Power BI (basic), Excel</p>
+        </div>
+        <div class="glass p-6 rounded-xl shadow-lg hover:shadow-xl transition">
+          <h3 class="text-lg font-semibold text-green-400 mb-3">Web Scraping & ETL</h3>
+          <p class="text-gray-300">Scrapy, Requests, BeautifulSoup, JSON/HTML parsing</p>
+        </div>
+        <div class="glass p-6 rounded-xl shadow-lg hover:shadow-xl transition">
+          <h3 class="text-lg font-semibold text-green-400 mb-3">DevOps & Cloud</h3>
+          <p class="text-gray-300">Docker, Git, AWS S3, GitHub Actions, Apache Airflow</p>
+        </div>
+        <div class="glass p-6 rounded-xl shadow-lg hover:shadow-xl transition">
+          <h3 class="text-lg font-semibold text-green-400 mb-3">Databases</h3>
+          <p class="text-gray-300">MySQL, PostgreSQL, MSSQL, MongoDB (basic), Cosmos DB</p>
+        </div>
+        <div class="glass p-6 rounded-xl shadow-lg hover:shadow-xl transition">
+          <h3 class="text-lg font-semibold text-green-400 mb-3">Tools & Environments</h3>
+          <p class="text-gray-300">Visual Studio Code, DBeaver, Eclipse, Ubuntu, Windows</p>
+        </div>
+        <div class="glass p-6 rounded-xl shadow-lg hover:shadow-xl transition">
+          <h3 class="text-lg font-semibold text-green-400 mb-3">Automation Tools</h3>
+          <p class="text-gray-300">OpenAI ChatGPT API, Prompt Engineering, N8N (basic)</p>
+        </div>
+        <div class="glass p-6 rounded-xl shadow-lg hover:shadow-xl transition md:col-span-3">
+          <h3 class="text-lg font-semibold text-green-400 mb-3">Soft Skills</h3>
+          <p class="text-gray-300">Agile development, code reviews, documentation</p>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="bg-gradient-to-r from-green-500 to-teal-500 p-1 rounded-xl shadow-lg hover:scale-105 transform transition">
-        <div class="bg-gray-900 p-5 rounded-xl h-full">
-          <h3 class="font-semibold text-lg mb-2">Prosepulse Article Generator</h3>
-          <p class="text-gray-300 text-sm">
-            AI-powered content generation system using Python, FastAPI & Cosmos DB.
-          </p>
+  <!-- Projects -->
+  <section id="projects" class="py-10 bg-gray-900/40">
+    <div class="container-max mx-auto px-6" data-aos="fade-up">
+      <h2 class="text-2xl font-bold mb-6 text-blue-400">Projects</h2>
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="p-1 rounded-xl shadow-lg hover:scale-105 transform transition">
+          <div class="glass p-5 rounded-xl h-full">
+            <h3 class="font-semibold text-lg mb-2">JATO Car Data Pipeline</h3>
+            <p class="text-gray-300 text-sm">Automated vehicle pricing pipeline with Scrapy, Airflow, MySQL, Docker & OpenAI API.</p>
+            <div class="mt-4 flex gap-2">
+              <button class="px-3 py-2 rounded bg-blue-500 text-white text-sm" onclick="openProject('jato')">Details</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-1 rounded-xl shadow-lg hover:scale-105 transform transition">
+          <div class="glass p-5 rounded-xl h-full">
+            <h3 class="font-semibold text-lg mb-2">Prosepulse Article Generator</h3>
+            <p class="text-gray-300 text-sm">AI-powered content generation system using Python, FastAPI & Cosmos DB.</p>
+            <div class="mt-4 flex gap-2">
+              <button class="px-3 py-2 rounded bg-blue-500 text-white text-sm" onclick="openProject('prosepulse')">Details</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-1 rounded-xl shadow-lg hover:scale-105 transform transition">
+          <div class="glass p-5 rounded-xl h-full">
+            <h3 class="font-semibold text-lg mb-2">StorTrack Data Crawler</h3>
+            <p class="text-gray-300 text-sm">Global self-storage unit data scraper & sync system with AWS S3 integration.</p>
+            <div class="mt-4 flex gap-2">
+              <button class="px-3 py-2 rounded bg-blue-500 text-white text-sm" onclick="openProject('stortrack')">Details</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Achievements -->
+  <section id="achievements" class="py-10">
+    <div class="container-max mx-auto px-6" data-aos="fade-right">
+      <h2 class="text-2xl font-bold mb-6 text-blue-400">Achievements & Certifications</h2>
+      <div class="space-y-6">
+        <div class="glass p-5 rounded-xl shadow hover:shadow-lg transition">
+          <h3 class="text-lg font-semibold text-green-400">AI Automation: Build LLM Apps & AI Agents with n8n & APIs</h3>
+          <p class="text-gray-300">Udemy — 2025</p>
+        </div>
+        <div class="glass p-5 rounded-xl shadow hover:shadow-lg transition">
+          <h3 class="text-lg font-semibold text-green-400">Complete Hands-On Introduction to Apache Airflow</h3>
+          <p class="text-gray-300">Udemy — 2025</p>
+          <ul class="list-disc list-inside text-gray-400 mt-2">
+            <li>Built a demo project using <strong>Scrapy, SQL, Docker, Apache Airflow, and Git</strong> for basic ETL automation & workflow orchestration.</li>
+            <li><a href="https://github.com/Gowthamgy/demo_projects" target="_blank" class="text-blue-400 hover:underline">View on GitHub</a></li>
+          </ul>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="bg-gradient-to-r from-pink-500 to-orange-500 p-1 rounded-xl shadow-lg hover:scale-105 transform transition">
-        <div class="bg-gray-900 p-5 rounded-xl h-full">
-          <h3 class="font-semibold text-lg mb-2">StorTrack Data Crawler</h3>
-          <p class="text-gray-300 text-sm">
-            Global self-storage unit data scraper & sync system with AWS S3 integration.
-          </p>
+  <!-- Education -->
+  <section id="education" class="py-10 bg-gradient-to-t from-black/40 via-transparent to-black/40">
+    <div class="container-max mx-auto px-6" data-aos="fade-left">
+      <h2 class="text-2xl font-bold mb-6 text-blue-400">Education</h2>
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="p-1 rounded-xl shadow-lg hover:scale-105 transform transition">
+          <div class="glass p-5 rounded-xl h-full">
+            <h3 class="font-semibold text-lg mb-2">Master of Computer Applications (MCA)</h3>
+            <p class="text-gray-300 text-sm">Sri Ramakrishna Mission Vidyalaya College of Arts and Science, 2018</p>
+          </div>
+        </div>
+        <div class="p-1 rounded-xl shadow-lg hover:scale-105 transform transition">
+          <div class="glass p-5 rounded-xl h-full">
+            <h3 class="font-semibold text-lg mb-2">Bachelor of Computer Applications (BCA)</h3>
+            <p class="text-gray-300 text-sm">Sri Ramakrishna Mission Vidyalaya College of Arts and Science, 2016</p>
+          </div>
         </div>
       </div>
-
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Achievements & Certifications -->
-<section id="achievements" class="bg-gray-800 py-10 fade-in">
-  <div class="container mx-auto px-6">
-    <h2 class="text-2xl font-bold mb-6 text-blue-400">Achievements & Certifications</h2>
-    
-    <div class="space-y-6">
-      <!-- Certification Card -->
-      <div class="bg-gray-900 p-5 rounded-xl shadow hover:shadow-lg transition">
-        <h3 class="text-lg font-semibold text-green-400">AI Automation: Build LLM Apps & AI Agents with n8n & APIs</h3>
-        <p class="text-gray-300">Udemy — 2025</p>
+  <!-- AI Chat -->
+  <section id="ai-chat" class="relative py-16 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div class="container-max mx-auto px-6 max-w-4xl relative z-10" data-aos="zoom-in-up">
+      <div class="text-center mb-8">
+        <h2 class="text-4xl font-bold text-white mb-4">💬 AI Career Assistant</h2>
+        <p class="text-gray-300 max-w-xl mx-auto">Curious about my experience, skills, or projects? Ask away!</p>
       </div>
-
-      <!-- Certification + Project Card -->
-      <div class="bg-gray-900 p-5 rounded-xl shadow hover:shadow-lg transition">
-        <h3 class="text-lg font-semibold text-green-400">Complete Hands-On Introduction to Apache Airflow</h3>
-        <p class="text-gray-300">Udemy — 2025</p>
-        <ul class="list-disc list-inside text-gray-400 mt-2">
-          <li>Built a demo project using <strong>Scrapy, SQL, Docker, Apache Airflow, and Git</strong> for basic ETL automation & workflow orchestration.</li>
-          <li><a href="https://github.com/Gowthamgy/demo_projects" target="_blank" class="text-blue-400 hover:underline">View on GitHub</a></li>
-        </ul>
+      <div id="chat-box" class="p-4 h-72 overflow-y-auto rounded-xl shadow-xl bg-white/6 backdrop-blur-md border border-white/20 mb-4 text-white space-y-3">
+        <div class="bg-blue-500/80 inline-block px-4 py-2 rounded-xl shadow-md">👋 Hi! I’m Gowtham’s AI assistant. How can I help you today?</div>
+      </div>
+      <div class="flex rounded-xl overflow-hidden shadow-lg border border-white/10">
+        <input id="user-input" type="text" placeholder="Type your question..." class="flex-1 p-4 bg-gray-900/60 text-white border-none focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <button id="send-btn" class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 text-sm md:text-base font-semibold text-white hover:opacity-90 transition">Send</button>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Education -->
-<section id="education" class="bg-gray-800 py-10">
-  <div class="container mx-auto px-6">
-    <h2 class="text-2xl font-bold mb-6 text-blue-400">Education</h2>
-    <div class="grid gap-6 md:grid-cols-2">
-
-      <div class="bg-gradient-to-r from-yellow-500 to-red-500 p-1 rounded-xl shadow-lg hover:scale-105 transform transition">
-        <div class="bg-gray-900 p-5 rounded-xl h-full">
-          <h3 class="font-semibold text-lg mb-2">Master of Computer Applications (MCA)</h3>
-          <p class="text-gray-300 text-sm">
-            Sri Ramakrishna Mission Vidyalaya College of Arts and Science, 2018
-          </p>
-        </div>
+  <!-- Contact (now modal-driven) -->
+  <section id="contact" class="py-16">
+    <div class="container-max mx-auto px-6 max-w-3xl text-center" data-aos="fade-up">
+      <h2 class="text-4xl font-bold text-white mb-4">Let’s Connect</h2>
+      <p class="text-gray-400 text-center mb-6">I’d love to hear from you. Click below to open a quick contact popup or the feedback form.</p>
+      <div class="flex gap-4 justify-center">
+        <button class="bg-blue-500 px-5 py-3 rounded-lg" onclick="openModal('contactModal')">Contact Details</button>
+        <button class="bg-indigo-500 px-5 py-3 rounded-lg" onclick="openModal('feedbackModal')">Give Feedback</button>
       </div>
-
-      <div class="bg-gradient-to-r from-purple-500 to-pink-500 p-1 rounded-xl shadow-lg hover:scale-105 transform transition">
-        <div class="bg-gray-900 p-5 rounded-xl h-full">
-          <h3 class="font-semibold text-lg mb-2">Bachelor of Computer Applications (BCA)</h3>
-          <p class="text-gray-300 text-sm">
-            Sri Ramakrishna Mission Vidyalaya College of Arts and Science, 2016
-          </p>
-        </div>
-      </div>
-
+      <p class="text-center text-gray-400 mt-6">Prefer email? <a href="mailto:gowthamjohn7@gmail.com" class="text-blue-400 hover:underline">gowthamjohn7@gmail.com</a></p>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- AI Chatbot (Modern Floating Style) -->
-<section id="ai-chat" class="relative py-16 bg-gradient-to-br from-gray-900 via-gray-800 to-black fade-in">
-  <div class="container mx-auto px-6 max-w-4xl relative z-10">
-
-    <!-- Heading -->
-    <div class="text-center mb-8">
-      <h2 class="text-4xl font-bold text-white mb-4">💬 AI Career Assistant</h2>
-      <p class="text-gray-300 max-w-xl mx-auto">
-        Curious about my experience, skills, or projects? Ask away!
-      </p>
+  <footer class="bg-gray-900 py-6 mt-10">
+    <div class="container-max mx-auto px-6 text-center text-gray-400">
+      <p>&copy; 2025 Gowtham A. ❤️ All rights reserved.</p>
     </div>
-
-    <!-- Chat Box -->
-    <div id="chat-box" class="p-4 h-72 overflow-y-auto rounded-xl shadow-xl bg-white/10 backdrop-blur-md border border-white/20 mb-4 text-white space-y-3">
-      <!-- Welcome message -->
-      <div class="bg-blue-500/80 inline-block px-4 py-2 rounded-xl shadow-md animate-fadeIn">
-        👋 Hi! I’m Gowtham’s AI assistant. How can I help you today?
-      </div>
-    </div>
-
-    <!-- Input Row -->
-    <div class="flex rounded-xl overflow-hidden shadow-lg border border-white/10">
-      <input id="user-input" type="text" placeholder="Type your question..."
-        class="flex-1 p-4 bg-gray-900/70 text-white border-none focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <button id="send-btn"
-        class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 text-sm md:text-base font-semibold text-white hover:opacity-90 transition">
-        Send
-      </button>
-    </div>
-  </div>
-
-  <!-- Glow Overlay -->
-  <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-50 pointer-events-none"></div>
-
-  <!-- Simple fade animation -->
-  <style>
-    .animate-fadeIn {
-      animation: fadeIn 0.6s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
-</section>
-
-
-
-<!-- Contact & Feedback (Advanced Version) -->
-<section id="contact" class="relative py-16 bg-gradient-to-br from-blue-900 via-gray-900 to-black fade-in">
-  <div class="container mx-auto px-6 max-w-4xl relative z-10">
-
-    <div class="text-center mb-10">
-      <h2 class="text-4xl font-bold text-white mb-4">📬 Contact & Feedback</h2>
-      <p class="text-gray-300 max-w-xl mx-auto">
-        Got questions or feedback? I’d love to hear from you.
-      </p>
-    </div>
-
-    <!-- Contact Info -->
-    <div class="text-center text-lg mb-8">
-      <p class="text-gray-300">📧 <a href="mailto:gowthamjohn7@gmail.com" class="text-blue-400 hover:underline">gowthamjohn7@gmail.com</a></p>
-      <p class="text-gray-300">📞 <a href="tel:+918122579351" class="text-blue-400 hover:underline">+91 81225 79351</a></p>
-      <p class="text-gray-300">🔗 
-        <a href="https://linkedin.com/in/gowtham-gy-95ab57155" class="text-blue-400 hover:underline">LinkedIn</a> | 
-        <a href="https://github.com/Gowthamgy/demo_projects" class="text-blue-400 hover:underline">GitHub</a>
-      </p>
-    </div>
-
-    <!-- Feedback Form -->
-    <form id="feedback-form" action="https://formspree.io/f/mwkzvqqr" method="POST"
-          class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/20 space-y-4">
-
-      <input type="text" name="name" placeholder="Your Name" required
-             class="w-full p-4 rounded-lg bg-gray-900/70 text-white border border-gray-700 focus:ring-2 focus:ring-blue-500 outline-none">
-
-      <input type="email" name="email" placeholder="Your Email" required
-             class="w-full p-4 rounded-lg bg-gray-900/70 text-white border border-gray-700 focus:ring-2 focus:ring-blue-500 outline-none">
-
-      <textarea name="message" placeholder="Your Feedback" rows="4" required
-                class="w-full p-4 rounded-lg bg-gray-900/70 text-white border border-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
-
-      <button type="submit"
-              class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-4 rounded-lg shadow-lg hover:shadow-2xl transform hover:-translate-y-0.5 transition">
-        🚀 Send Feedback
-      </button>
-    </form>
-
-    <!-- Popup Message -->
-    <div id="form-message" class="hidden mt-6 text-center p-4 rounded-lg text-white font-semibold"></div>
-  </div>
-
-  <!-- Decorative Overlay -->
-  <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-60 pointer-events-none"></div>
-</section>
-
-<!-- Script for Form Feedback -->
-<script>
-  document.getElementById("feedback-form").addEventListener("submit", async function(event) {
-  event.preventDefault();
-  const form = event.target;
-  const formData = new FormData(form);
-  const messageDiv = document.getElementById("form-message");
-
-  try {
-    const response = await fetch(form.action, {
-      method: form.method,
-      body: formData,
-      headers: { 'Accept': 'application/json' }
-    });
-
-    if (response.ok) {
-      messageDiv.textContent = "✅ Thank you! Your feedback has been sent.";
-      messageDiv.className = "mt-6 text-center p-4 rounded-lg bg-green-600 text-white font-semibold";
-      form.reset();
-    } else {
-      messageDiv.textContent = "❌ Oops! Something went wrong.";
-      messageDiv.className = "mt-6 text-center p-4 rounded-lg bg-red-600 text-white font-semibold";
-    }
-    messageDiv.classList.remove("hidden");
-
-    // Hide after 4 seconds
-    setTimeout(() => messageDiv.classList.add("hidden"), 4000);
-
-  } catch (error) {
-    messageDiv.textContent = "⚠️ Network error. Please try again.";
-    messageDiv.className = "mt-6 text-center p-4 rounded-lg bg-yellow-600 text-white font-semibold";
-    messageDiv.classList.remove("hidden");
-  }
-});
-</script>
-
-
-
-<footer class="bg-gray-900 py-6 text-center text-gray-500 mt-8">
-  © 2025 Built with ❤️ by Gowtham.
-</footer>
-
-<script src="config.js"></script>
-<script>
-document.getElementById('send-btn').addEventListener('click', sendMessage);
-document.getElementById('user-input').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ sendMessage(); }});
-
-function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-async function sendMessage(){
-  const input = document.getElementById('user-input');
-  const chatBox = document.getElementById('chat-box');
-  const userText = input.value.trim();
-  if(!userText) return;
-  chatBox.innerHTML += `<p><strong>You:</strong> ${escapeHtml(userText)}</p>`;
-  input.value = '';
-
-  const placeholder = document.createElement('p');
-  placeholder.innerHTML = `<strong>AI:</strong> <em>thinking…</em>`;
-  chatBox.appendChild(placeholder);
-  chatBox.scrollTop = chatBox.scrollHeight;
-
-  try{
-    const resp = await fetch(CONFIG.BACKEND_URL + '/api/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ question: userText })
-    });
-    const data = await resp.json();
-    placeholder.innerHTML = `<strong>AI:</strong> ${escapeHtml(data.answer || data.error || 'No response')}`;
-  }catch(err){
-    placeholder.innerHTML = `<strong>AI:</strong> Error: ${escapeHtml(err.message)}`;
-  }
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-</script>
+  </footer>
 
 </main>
+
+<!-- Floating action button -->
+<div class="fixed right-6 bottom-6 z-40 flex flex-col gap-3">
+  <a href="GowthamA_CV.pdf" class="shadow-lg glass px-4 py-3 rounded-full flex items-center gap-3 hover:scale-105 transition" title="Download Resume">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+  </a>
+  <button onclick="openModal('contactModal')" class="shadow-lg glass px-4 py-3 rounded-full hover:scale-105 transition" title="Contact">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H8m0 0l4-4m-4 4l4 4"/></svg>
+  </button>
+</div>
+
+<!-- Modals (Contact, Feedback, Project details) -->
+<div id="contactModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+  <div class="glass p-6 rounded-lg max-w-lg w-full modal-enter-active">
+    <div class="flex justify-between items-start">
+      <h2 class="text-2xl font-bold mb-2">📬 Contact Me</h2>
+      <button onclick="closeModal('contactModal')" class="text-gray-300 hover:text-white">✕</button>
+    </div>
+    <p class="text-gray-300 mb-4">Email: <a href="mailto:gowthamjohn7@gmail.com" class="text-blue-400">gowthamjohn7@gmail.com</a></p>
+    <p class="text-gray-300 mb-4">Or reach out via LinkedIn / GitHub.</p>
+    <div class="mt-4 flex gap-3">
+      <a href="https://github.com/Gowthamgy" target="_blank" class="px-4 py-2 rounded bg-gray-800 hover:bg-gray-700">GitHub</a>
+      <a href="https://www.linkedin.com" target="_blank" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500">LinkedIn</a>
+    </div>
+  </div>
+</div>
+
+<div id="feedbackModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+  <div class="glass p-4 rounded-lg max-w-4xl w-full modal-enter-active">
+    <div class="flex justify-between items-start mb-2">
+      <h2 class="text-2xl font-bold">✍️ Feedback</h2>
+      <button onclick="closeModal('feedbackModal')" class="text-gray-300 hover:text-white">✕</button>
+    </div>
+    <p class="text-gray-300 mb-4">Please share your feedback — the form will open inside this popup. If it doesn't load, use the link below.</p>
+    <div class="w-full h-[520px] bg-gray-900/30 rounded overflow-hidden">
+      <!-- Google Form iframe — preserved from original content but now in modal -->
+      <iframe id="feedbackFrame" src="https://docs.google.com/forms/d/1CRcYvVHAsf1ta6_7V8PpeNM-VZxaY0maCHhofy0foKI/viewform?embedded=true" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0" class="rounded"></iframe>
+    </div>
+    <p class="text-sm text-gray-400 mt-3">Prefer direct email? <a href="mailto:gowthamjohn7@gmail.com" class="text-blue-400">gowthamjohn7@gmail.com</a></p>
+  </div>
+</div>
+
+<!-- Project modals template -->
+<div id="projectModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+  <div class="glass p-6 rounded-lg max-w-3xl w-full modal-enter-active">
+    <div class="flex justify-between items-start mb-2">
+      <h2 id="projTitle" class="text-2xl font-bold">Project</h2>
+      <button onclick="closeModal('projectModal')" class="text-gray-300 hover:text-white">✕</button>
+    </div>
+    <div id="projBody" class="text-gray-300"></div>
+  </div>
+</div>
+
+<!-- Scripts - load AOS, then run initialization + app logic -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  // ========== CONFIG ==========
+  // Replace with your Render backend URL (include /chat)
+  const CONFIG = { CHAT_API_URL: "https://gowtham-chat-backend.onrender.com/chat" };
+
+  // ========== AOS Init ==========
+  AOS.init({ duration: 700, once: true, easing: 'ease-in-out' });
+
+  // ========== Particles ==========
+  tsParticles.load('tsparticles', {
+    fpsLimit: 60,
+    interactivity: { events: { onHover: { enable: true, mode: 'repulse' }, resize: true } },
+    particles: {
+      number: { value: 30 },
+      color: { value: ['#2563eb', '#7c3aed', '#06b6d4'] },
+      shape: { type: 'circle' },
+      opacity: { value: 0.08 },
+      size: { value: { min: 1, max: 4 } },
+      move: { enable: true, speed: 0.8 }
+    },
+    detectRetina: true
+  });
+
+  // ========== UI Helpers ==========
+  const menuBtn = document.getElementById('menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  if (menuBtn) {
+    menuBtn.addEventListener('click', () => {
+      const expanded = menuBtn.getAttribute('aria-expanded') === 'true';
+      menuBtn.setAttribute('aria-expanded', !expanded);
+      mobileMenu.classList.toggle('hidden');
+    });
+  }
+  function toggleMobileMenu(){ mobileMenu.classList.add('hidden'); }
+
+  function openModal(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.classList.remove('hidden');
+    const focusable = el.querySelector('button, a, input, textarea');
+    if(focusable) focusable.focus();
+  }
+  function closeModal(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.classList.add('hidden');
+  }
+
+  // Projects detail data (keeps content same but shows more in modal)
+  const projects = {
+    jato: {
+      title: 'JATO Car Data Pipeline',
+      body: `
+        <p class="mb-2">Automated vehicle pricing pipeline with Scrapy, Airflow, MySQL, Docker & OpenAI API.</p>
+        <ul class="list-disc ml-5 text-gray-300">
+          <li>Scrapy spiders to crawl vehicle pages at scale</li>
+          <li>Airflow DAGs to orchestrate ETL & enrichment</li>
+          <li>MySQL for structured storage and analytics</li>
+          <li>Docker for local dev and containerized deployments</li>
+        </ul>`
+    },
+    prosepulse: {
+      title: 'Prosepulse Article Generator',
+      body: `
+        <p class="mb-2">AI-powered content generation system using Python, FastAPI & Cosmos DB.</p>
+        <ul class="list-disc ml-5 text-gray-300">
+          <li>FastAPI service wrapping LLM calls</li>
+          <li>Cosmos DB for semi-structured content</li>
+          <li>Prompt-engineering for consistent tone</li>
+        </ul>`
+    },
+    stortrack: {
+      title: 'StorTrack Data Crawler',
+      body: `
+        <p class="mb-2">Global self-storage unit data scraper & sync system with AWS S3 integration.</p>
+        <ul class="list-disc ml-5 text-gray-300">
+          <li>Scalable scraping with rotating proxies</li>
+          <li>Data lake in S3 and ingestion pipelines</li>
+          <li>Sync tools to keep datasets up-to-date</li>
+        </ul>`
+    }
+  };
+
+  function openProject(key){
+    const p = projects[key];
+    if(!p) return;
+    document.getElementById('projTitle').innerText = p.title;
+    document.getElementById('projBody').innerHTML = p.body;
+    openModal('projectModal');
+  }
+
+  // Escaping helper
+  function escapeHtml(s) {
+    if (!s) return '';
+    return s.replace(/[&<>"']/g, function (c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  // ========== Chat Logic (calls your secure backend) ==========
+  document.getElementById('send-btn').addEventListener('click', sendMessage);
+  document.getElementById('user-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendMessage(); });
+
+  async function sendMessage(){
+    const input = document.getElementById('user-input');
+    const chatBox = document.getElementById('chat-box');
+    const userText = input.value.trim(); if(!userText) return;
+
+    // append user message
+    chatBox.innerHTML += `<div class="text-sm text-gray-200"><strong>You:</strong> ${escapeHtml(userText)}</div>`;
+    input.value = '';
+    const placeholder = document.createElement('div'); placeholder.className='text-sm text-gray-300'; placeholder.innerHTML = '<strong>AI:</strong> <em>thinking…</em>';
+    chatBox.appendChild(placeholder); chatBox.scrollTop = chatBox.scrollHeight;
+
+    try{
+      const response = await fetch(CONFIG.CHAT_API_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ message: userText })
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        placeholder.innerHTML = `<strong>AI:</strong> ⚠️ ${escapeHtml(String(data.error))}`;
+      } else {
+        const text = data.reply || 'Sorry, no reply.';
+        placeholder.innerHTML = `<strong>AI:</strong> ${escapeHtml(String(text))}`;
+      }
+    }catch(err){
+      placeholder.innerHTML = `<strong>AI:</strong> Sorry, I couldn't fetch a response right now. Please try again later.`;
+      console.error(err);
+    }
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+</script> 
 </body>
 </html>
+<script>
+  // Ensure modals are closed on outside click
+  document.addEventListener('click', function(event) {
+    const modals = ['contactModal', 'feedbackModal', 'projectModal'];
+    modals.forEach(id => {
+      const modal = document.getElementById(id);
+      if (modal && !modal.contains(event.target) && !event.target.closest('#' + id)) {
+        closeModal(id);
+      }
+    });
+  });
