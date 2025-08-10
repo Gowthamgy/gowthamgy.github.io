@@ -134,7 +134,7 @@
         </div>
         <div class="glass p-6 rounded-xl shadow-lg hover:shadow-xl transition">
           <h3 class="text-lg font-semibold text-green-400 mb-3">Automation Tools</h3>
-          <p class="text-gray-300">OpenAI ChatGPT API, Prompt Engineering, N8N (basic)</p>
+          <p class="text-gray-303">OpenAI ChatGPT API, Prompt Engineering, N8N (basic)</p>
         </div>
         <div class="glass p-6 rounded-xl shadow-lg hover:shadow-xl transition md:col-span-3">
           <h3 class="text-lg font-semibold text-green-400 mb-3">Soft Skills</h3>
@@ -232,12 +232,17 @@
         <h2 class="text-4xl font-bold text-white mb-4">💬 AI Career Assistant</h2>
         <p class="text-gray-300 max-w-xl mx-auto">Curious about my experience, skills, or projects? Ask away!</p>
       </div>
-      <div id="chat-box" class="p-4 h-72 overflow-y-auto rounded-xl shadow-xl bg-white/6 backdrop-blur-md border border-white/20 mb-4 text-white space-y-3">
+
+      <!-- responsive chat box height: small screens shorter for better view -->
+      <div id="chat-box" class="p-4 md:h-72 h-56 overflow-y-auto rounded-xl shadow-xl bg-white/6 backdrop-blur-md border border-white/20 mb-4 text-white space-y-3">
         <div class="bg-blue-500/80 inline-block px-4 py-2 rounded-xl shadow-md">👋 Hi! I’m Gowtham’s AI assistant. How can I help you today?</div>
       </div>
+
       <div class="flex rounded-xl overflow-hidden shadow-lg border border-white/10">
-        <input id="user-input" type="text" placeholder="Type your question..." class="flex-1 p-4 bg-gray-900/60 text-white border-none focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        <button id="send-btn" class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 text-sm md:text-base font-semibold text-white hover:opacity-90 transition">Send</button>
+        <!-- min-w-0 ensures input shrinks on small screens -->
+        <input id="user-input" aria-label="Ask a question" type="text" placeholder="Type your question..." class="flex-1 min-w-0 p-4 bg-gray-900/60 text-white border-none focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <!-- fixed width + flex-shrink-0 ensures button is visible and not pushed off-screen -->
+        <button id="send-btn" aria-label="Send message" class="flex-shrink-0 w-28 md:w-36 bg-gradient-to-r from-blue-500 to-purple-600 px-4 text-sm md:text-base font-semibold text-white hover:opacity-90 transition">Send</button>
       </div>
     </div>
   </section>
@@ -356,6 +361,7 @@
     const el = document.getElementById(id);
     if(!el) return;
     el.classList.remove('hidden');
+    // focus first focusable element for accessibility
     const focusable = el.querySelector('button, a, input, textarea');
     if(focusable) focusable.focus();
   }
@@ -364,6 +370,16 @@
     if(!el) return;
     el.classList.add('hidden');
   }
+
+  // Close modal when backdrop clicked (click target === modal container)
+  ['contactModal','feedbackModal','projectModal'].forEach(id => {
+    const modal = document.getElementById(id);
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal(id);
+      });
+    }
+  });
 
   // Projects detail data (keeps content same but shows more in modal)
   const projects = {
@@ -417,8 +433,11 @@
   }
 
   // ========== Chat Logic (calls your secure backend) ==========
-  document.getElementById('send-btn').addEventListener('click', sendMessage);
-  document.getElementById('user-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendMessage(); });
+  const sendBtn = document.getElementById('send-btn');
+  const userInput = document.getElementById('user-input');
+
+  if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+  if (userInput) userInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') sendMessage(); });
 
   async function sendMessage(){
     const input = document.getElementById('user-input');
@@ -426,10 +445,19 @@
     const userText = input.value.trim(); if(!userText) return;
 
     // append user message
-    chatBox.innerHTML += `<div class="text-sm text-gray-200"><strong>You:</strong> ${escapeHtml(userText)}</div>`;
+    const userNode = document.createElement('div');
+    userNode.className = 'text-sm text-gray-200';
+    userNode.innerHTML = `<strong>You:</strong> ${escapeHtml(userText)}`;
+    chatBox.appendChild(userNode);
+
     input.value = '';
-    const placeholder = document.createElement('div'); placeholder.className='text-sm text-gray-300'; placeholder.innerHTML = '<strong>AI:</strong> <em>thinking…</em>';
-    chatBox.appendChild(placeholder); chatBox.scrollTop = chatBox.scrollHeight;
+    input.focus();
+
+    const placeholder = document.createElement('div');
+    placeholder.className = 'text-sm text-gray-300';
+    placeholder.innerHTML = '<strong>AI:</strong> <em>thinking…</em>';
+    chatBox.appendChild(placeholder);
+    chatBox.scrollTop = chatBox.scrollHeight;
 
     try{
       const response = await fetch(CONFIG.CHAT_API_URL, {
@@ -453,17 +481,6 @@
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 
-</script> 
+</script>
 </body>
 </html>
-<script>
-  // Ensure modals are closed on outside click
-  document.addEventListener('click', function(event) {
-    const modals = ['contactModal', 'feedbackModal', 'projectModal'];
-    modals.forEach(id => {
-      const modal = document.getElementById(id);
-      if (modal && !modal.contains(event.target) && !event.target.closest('#' + id)) {
-        closeModal(id);
-      }
-    });
-  });
